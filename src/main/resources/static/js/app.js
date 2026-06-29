@@ -806,10 +806,17 @@ async function saveUser() {
   closeM('m-usuario'); renderUsers();
 }
 
-function toggleUser(id) {
+async function toggleUser(id) {
   const u = USERS.find(x => x.id === id); if (!u) return;
   if (u.id === CU?.id) { toast('No puedes desactivar tu propia cuenta','warning'); return; }
-  u.activo = !u.activo; toast(`Usuario ${u.activo?'activado':'desactivado'} · RF-08`,'success', u.activo?'✅':'🚫'); renderUsers();
+  try {
+    if (!USE_DEMO && api.getToken()) await api.toggleUser(id);
+    u.activo = !u.activo;
+    toast(`Usuario ${u.activo?'activado':'desactivado'} · RF-08`,'success', u.activo?'✅':'🚫');
+    loadAll();
+  } catch (e) {
+    toast('Error al cambiar estado: ' + e.message, 'error');
+  }
 }
 
 // ══════════════════════════════════════════════════════════════════════
