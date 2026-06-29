@@ -284,11 +284,11 @@
       <div class="fg" style="margin-bottom:18px"><label class="fl">Contraseña <span class="req">*</span></label><input type="password" id="l-pas" class="fi" placeholder="••••••••" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()"/></div>
 <button class="btn btn-navy btn-full btn-lg" onclick="doLogin()" id="btn-login"><span id="btn-login-txt">Ingresar al sistema</span></button>
           <div style="text-align:right;margin-top:9px"><a href="#" onclick="abrirRecuperarPassword();return false" style="font-size:.78rem;color:var(--navy-3);font-weight:500">¿Olvidaste tu contraseña?</a></div>
-      <div class="l-or">Acceso rápido demo</div>
+      <div class="l-or">Acceso rápido</div>
       <div class="demo-cards">
-        <button class="dc" onclick="loginDemo('admin')"><div class="dc-av av-admin">👑</div><div class="dc-info"><div class="dc-name">Jhon Taipe</div><div class="dc-role">Administrador · Turno Completo (08:00–19:00)</div></div><span style="color:var(--slate-3);font-size:.88rem">→</span></button>
-        <button class="dc" onclick="loginDemo('vendedor')"><div class="dc-av av-vend">🏷️</div><div class="dc-info"><div class="dc-name">Ana Flores</div><div class="dc-role">Vendedora · Turno Mañana (08:00–13:30)</div></div><span style="color:var(--slate-3);font-size:.88rem">→</span></button>
-        <button class="dc" onclick="loginDemo('miguel')"><div class="dc-av av-vend">👤</div><div class="dc-info"><div class="dc-name">Miguel Torres</div><div class="dc-role">Vendedor · Turno Tarde (14:00–19:00)</div></div><span style="color:var(--slate-3);font-size:.88rem">→</span></button>
+        <button class="dc" onclick="doQuickLogin('admin','admin123')"><div class="dc-av av-admin">👑</div><div class="dc-info"><div class="dc-name">Admin Sistema</div><div class="dc-role">Administrador · Turno Completo (08:00–19:00)</div></div><span style="color:var(--slate-3);font-size:.88rem">→</span></button>
+        <button class="dc" onclick="doQuickLogin('ana','vendedor123')"><div class="dc-av av-vend">🏷️</div><div class="dc-info"><div class="dc-name">Ana Vendedora</div><div class="dc-role">Vendedora · Turno Completo (08:00–19:00)</div></div><span style="color:var(--slate-3);font-size:.88rem">→</span></button>
+        <button class="dc" onclick="doQuickLogin('miguel','vendedor123')"><div class="dc-av av-vend">👤</div><div class="dc-info"><div class="dc-name">Miguel Vendedor</div><div class="dc-role">Vendedor · Turno Tarde (14:00–19:00)</div></div><span style="color:var(--slate-3);font-size:.88rem">→</span></button>
       </div>
       <div class="lfw-ft"><strong>ERS Librería Machy · SVM v3.0</strong><br/>Todos los derechos reservados</div>
     </div>

@@ -73,6 +73,20 @@ public class DatabaseSeeder implements CommandLineRunner {
         vendedor.setIntentosFallidos(0);
         userRepository.save(vendedor);
         log.info("Vendedor user created: ana / vendedor123");
+
+        var vendedor2 = new User();
+        vendedor2.setNombre("Miguel");
+        vendedor2.setApellidos("Vendedor");
+        vendedor2.setDni("22222222");
+        vendedor2.setCorreo("miguel@machy.com");
+        vendedor2.setUsername("miguel");
+        vendedor2.setPasswordHash(passwordEncoder.encode("vendedor123"));
+        vendedor2.setRol("vendedor");
+        vendedor2.setTurno("tarde");
+        vendedor2.setActivo(true);
+        vendedor2.setIntentosFallidos(0);
+        userRepository.save(vendedor2);
+        log.info("Vendedor user created: miguel / vendedor123");
     }
 
     private void seedCategories() {

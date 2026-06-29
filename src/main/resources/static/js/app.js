@@ -118,19 +118,29 @@ let ASISTENCIA = [
 // ══════════════════════════════════════════════════════════════════════
 // AUTH
 // ══════════════════════════════════════════════════════════════════════
-const DEMO_USERS = {
-  admin:   {id:'u-admin',nombre:'Jhon',apellidos:'Taipe',username:'admin',   rol:'admin',   turno:'completo',av:'JT'},
-  vendedor:{id:'u-ana',  nombre:'Ana',   apellidos:'Flores', username:'vendedor',rol:'vendedor',turno:'manana',  av:'AF'},
-  miguel:  {id:'u-mig',  nombre:'Miguel',apellidos:'Torres', username:'miguel',  rol:'vendedor',turno:'tarde',   av:'MT'},
-};
-
 let CU = null;
 let IAT = null;
 let WAT = null;
 
-function loginDemo(role) {
-  document.getElementById('btn-login').disabled = true;
-  setTimeout(() => { CU = { ...DEMO_USERS[role] }; USE_DEMO = true; enterApp(); }, 350);
+async function doQuickLogin(username, password) {
+  const btn = document.getElementById('btn-login');
+  btn.disabled = true;
+  document.getElementById('btn-login-txt').innerHTML = '<span class="spin"></span> Verificando…';
+  try {
+    const resp = await api.login(username, password);
+    api.setToken(resp.token);
+    localStorage.setItem('machy_token', resp.token);
+    USE_DEMO = false;
+    setDbStatus('ok', 'API conectado');
+    CU = { id: resp.id, nombre: resp.nombre, apellidos: resp.apellidos,
+           username: resp.username, rol: resp.rol, turno: resp.turno, av: resp.av };
+    hideLoginErr();
+    enterApp();
+  } catch (e) {
+    showLoginErr(e.message || 'Error de conexión');
+    btn.disabled = false;
+    document.getElementById('btn-login-txt').textContent = 'Ingresar al sistema';
+  }
 }
 
 function showLoginErr(msg) {
