@@ -1,0 +1,40 @@
+server:
+  port: 8080
+
+spring:
+  autoconfigure:
+    exclude: org.springframework.boot.autoconfigure.security.servlet.UserDetailsServiceAutoConfiguration
+  datasource:
+    url: jdbc:postgresql://ep-crimson-paper-ataoeczu.c-9.us-east-1.aws.neon.tech/neondb?sslmode=require
+    username: neondb_owner
+    password: npg_tbdKHk45vIMg
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: true
+  jackson:
+    default-property-inclusion: non_null
+    time-zone: America/Lima
+
+  devtools:
+    livereload:
+      enabled: true
+    restart:
+      enabled: true
+
+app:
+  jwt:
+    secret: "MachySVM2025JWTSecretKeyForLibreriaMachySystemVeryLongAndSecure"
+    expiration-ms: 28800000
+  scan:
+    pin-attempts: 3
+    session-timeout-minutes: 5
+
+logging:
+  level:
+    com.machy: DEBUG
+    org.springframework.security: INFO
