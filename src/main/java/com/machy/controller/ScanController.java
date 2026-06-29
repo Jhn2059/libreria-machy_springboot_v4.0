@@ -2,7 +2,6 @@ package com.machy.controller;
 
 import com.machy.dto.response.ApiResponse;
 import com.machy.exception.ResourceNotFoundException;
-import com.machy.security.JwtAuthenticationFilter;
 import com.machy.websocket.ScanSessionHandler;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.ResponseEntity;
@@ -22,8 +21,7 @@ public class ScanController {
     }
 
     @PostMapping("/session")
-    public ResponseEntity<ApiResponse<?>> createSession(Authentication auth, HttpServletRequest request) {
-        var principal = (JwtAuthenticationFilter.UserPrincipal) auth.getPrincipal();
+    public ResponseEntity<ApiResponse<?>> createSession(HttpServletRequest request) {
         String sessionId = generarIdSesion();
         String pin = String.format("%04d", (int) (Math.random() * 9000 + 1000));
 

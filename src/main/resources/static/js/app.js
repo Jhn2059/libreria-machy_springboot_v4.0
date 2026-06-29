@@ -959,13 +959,6 @@ let REMOTE_SESSION_PIN = null;
 let REMOTE_AUTHENTICATED = false;
 let REMOTE_SCANNED_CODE = null;
 
-function genSessionAndPin() {
-  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-  let sid = '';
-  for (let i = 0; i < 6; i++) sid += chars[Math.floor(Math.random() * chars.length)];
-  return { sessionId: sid, pin: String(Math.floor(1000 + Math.random() * 9000)) };
-}
-
 function switchScanTab(tab) {
   document.getElementById('st-local').classList.toggle('active', tab === 'local');
   document.getElementById('st-remote').classList.toggle('active', tab === 'remote');
@@ -979,11 +972,18 @@ async function startRemoteScan() {
   if (USE_DEMO || !api.getToken()) {
     toast('El escáner remoto requiere conexión al servidor', 'warning', '⚠️'); return;
   }
-  const { sessionId, pin } = genSessionAndPin();
-  REMOTE_SESSION_ID = sessionId; REMOTE_SESSION_PIN = pin;
-  REMOTE_AUTHENTICATED = false; REMOTE_SCANNED_CODE = null;
   const btn = document.getElementById('btn-start-remote');
   btn.disabled = true; btn.textContent = '⏳ Iniciando…';
+  try {
+    const sessionData = await api.createScanSession();
+    REMOTE_SESSION_ID = sessionData.sessionId;
+    REMOTE_SESSION_PIN = sessionData.pin;
+  } catch(e) {
+    toast('Error al crear sesión en el servidor: ' + e.message, 'error');
+    btn.disabled = false; btn.textContent = '📲 Iniciar escaneo remoto';
+    return;
+  }
+  REMOTE_AUTHENTICATED = false; REMOTE_SCANNED_CODE = null;
   document.getElementById('remote-scan-status').classList.add('hidden');
   document.getElementById('rs-active').classList.remove('hidden');
   document.getElementById('rs-waiting').classList.remove('hidden');
@@ -1006,8 +1006,6 @@ async function startRemoteScan() {
   document.getElementById('rs-qr-img').src = qrUrl;
   document.getElementById('rs-qr-img').onerror = () => { document.getElementById('rs-qr-img').style.display = 'none'; };
   document.getElementById('rs-hint').classList.remove('hidden');
-
-  try { await api.createScanSession(); } catch(e) { console.warn('No se pudo crear sesión:', e); }
 
   // Conectar WebSocket STOMP
   const socket = new SockJS('/ws');
@@ -1046,6 +1044,9 @@ async function startRemoteScan() {
       }
     });
     btn.textContent = '✅ Sesión activa';
+  }, () => {
+    toast('⚠️ WebSocket no disponible — el celular debe usar el enlace directo', 'warning');
+    btn.textContent = '✅ Sesión activa (sin WS)';
   });
   toast('Sesión remota iniciada: ' + REMOTE_SESSION_ID, 'success', '📲');
 }
