@@ -32,49 +32,53 @@ public class DatabaseSeeder implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
-        if (userRepository.count() > 0) {
-            log.info("Database already seeded, skipping");
-            return;
+        boolean firstRun = userRepository.count() == 0;
+        if (firstRun) {
+            log.info("Seeding initial data...");
+            seedCategories();
+            seedSuppliers();
         }
-        log.info("Seeding initial data...");
-
         seedUsers();
-        seedCategories();
-        seedSuppliers();
-
         log.info("Database seeding completed");
     }
 
     private void seedUsers() {
-        var admin = new User();
-        admin.setNombre("Jhon");
-        admin.setApellidos("Taipe");
-        admin.setDni("00000000");
-        admin.setCorreo("admin@machy.com");
-        admin.setUsername("admin");
-        admin.setPasswordHash(passwordEncoder.encode("admin123"));
+        saveOrUpdateUser("admin", "Jhon", "Taipe", "00000000", "admin@machy.com", "admin123", "admin", "completo");
+        saveOrUpdateUser("ana", "Ana", "Flores", "11111111", "ana@machy.com", "vendedor123", "vendedor", "completo");
+        saveOrUpdateUser("miguel", "Miguel", "Torres", "22222222", "miguel@machy.com", "vendedor123", "vendedor", "tarde");
+    }
 
-        // ...
-
-        var vendedor = new User();
-        vendedor.setNombre("Ana");
-        vendedor.setApellidos("Flores");
-
-        // ...
-
-        var vendedor2 = new User();
-        vendedor2.setNombre("Miguel");
-        vendedor2.setApellidos("Torres");
-        vendedor2.setDni("22222222");
-        vendedor2.setCorreo("miguel@machy.com");
-        vendedor2.setUsername("miguel");
-        vendedor2.setPasswordHash(passwordEncoder.encode("vendedor123"));
-        vendedor2.setRol("vendedor");
-        vendedor2.setTurno("tarde");
-        vendedor2.setActivo(true);
-        vendedor2.setIntentosFallidos(0);
-        userRepository.save(vendedor2);
-        log.info("Vendedor user created: miguel / vendedor123");
+    private void saveOrUpdateUser(String username, String nombre, String apellidos,
+                                   String dni, String correo, String password,
+                                   String rol, String turno) {
+        var opt = userRepository.findByUsername(username);
+        if (opt.isPresent()) {
+            var user = opt.get();
+            user.setNombre(nombre);
+            user.setApellidos(apellidos);
+            user.setDni(dni);
+            user.setCorreo(correo);
+            user.setRol(rol);
+            user.setTurno(turno);
+            user.setPasswordHash(passwordEncoder.encode(password));
+            user.setActivo(true);
+            userRepository.save(user);
+            log.info("User updated: {} / {} {}", username, nombre, apellidos);
+        } else {
+            var user = new User();
+            user.setUsername(username);
+            user.setNombre(nombre);
+            user.setApellidos(apellidos);
+            user.setDni(dni);
+            user.setCorreo(correo);
+            user.setPasswordHash(passwordEncoder.encode(password));
+            user.setRol(rol);
+            user.setTurno(turno);
+            user.setActivo(true);
+            user.setIntentosFallidos(0);
+            userRepository.save(user);
+            log.info("User created: {} / {} {}", username, nombre, apellidos);
+        }
     }
 
     private void seedCategories() {
