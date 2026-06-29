@@ -5,9 +5,9 @@ spring:
   autoconfigure:
     exclude: org.springframework.boot.autoconfigure.security.servlet.UserDetailsServiceAutoConfiguration
   datasource:
-    url: jdbc:postgresql://ep-crimson-paper-ataoeczu.c-9.us-east-1.aws.neon.tech/neondb?sslmode=require
-    username: neondb_owner
-    password: npg_tbdKHk45vIMg
+    url: ${DB_URL}
+    username: ${DB_USER}
+    password: ${DB_PASS}
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
@@ -28,7 +28,7 @@ spring:
 
 app:
   jwt:
-    secret: "MachySVM2025JWTSecretKeyForLibreriaMachySystemVeryLongAndSecure"
+    secret: ${JWT_SECRET}
     expiration-ms: 28800000
   scan:
     pin-attempts: 3
