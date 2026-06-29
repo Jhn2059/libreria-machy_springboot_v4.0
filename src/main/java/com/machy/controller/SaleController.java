@@ -7,6 +7,8 @@ import com.machy.repository.UserRepository;
 import com.machy.security.JwtAuthenticationFilter;
 import com.machy.service.SaleService;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -27,10 +29,22 @@ public class SaleController {
     }
 
     @GetMapping
-    public ResponseEntity<ApiResponse<?>> getAll(Authentication auth) {
+    public ResponseEntity<ApiResponse<?>> getAll(Authentication auth,
+                                                  @RequestParam(defaultValue = "0") int page,
+                                                  @RequestParam(defaultValue = "99999") int size) {
         var principal = (JwtAuthenticationFilter.UserPrincipal) auth.getPrincipal();
+        boolean paginate = page > 0 || size < 99999;
         if ("admin".equals(principal.rol())) {
+            if (paginate) {
+                return ResponseEntity.ok(ApiResponse.ok(
+                        saleService.findAll(PageRequest.of(page, size, Sort.by("createdAt").descending()))));
+            }
             return ResponseEntity.ok(ApiResponse.ok(saleService.findAll()));
+        }
+        if (paginate) {
+            return ResponseEntity.ok(ApiResponse.ok(
+                    saleService.findByVendedor(principal.id(),
+                            PageRequest.of(page, size, Sort.by("createdAt").descending()))));
         }
         return ResponseEntity.ok(ApiResponse.ok(saleService.findByVendedor(principal.id())));
     }

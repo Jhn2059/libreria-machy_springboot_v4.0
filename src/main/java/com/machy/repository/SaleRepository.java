@@ -1,6 +1,8 @@
 package com.machy.repository;
 
 import com.machy.entity.Sale;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import java.time.Instant;
@@ -10,6 +12,7 @@ import java.util.UUID;
 public interface SaleRepository extends JpaRepository<Sale, UUID> {
     List<Sale> findAllByOrderByCreatedAtDesc();
     List<Sale> findByVendedorIdOrderByCreatedAtDesc(UUID vendedorId);
+    Page<Sale> findByVendedorIdOrderByCreatedAtDesc(UUID vendedorId, Pageable pageable);
     List<Sale> findByEstado(String estado);
 
     @Query("SELECT s FROM Sale s WHERE s.createdAt >= :since ORDER BY s.createdAt DESC")

@@ -7,6 +7,8 @@ import com.machy.entity.Supplier;
 import com.machy.repository.CategoryRepository;
 import com.machy.repository.ProductRepository;
 import com.machy.repository.SupplierRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,6 +33,10 @@ public class ProductService {
 
     public List<Product> findAll() {
         return productRepository.findAllByOrderByNombre();
+    }
+
+    public Page<Product> findAll(Pageable pageable) {
+        return productRepository.findAll(pageable);
     }
 
     public List<Product> findActive() {

@@ -4,6 +4,8 @@ import com.machy.dto.request.ProductRequest;
 import com.machy.dto.response.ApiResponse;
 import com.machy.service.ProductService;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -22,9 +24,15 @@ public class ProductController {
 
     @GetMapping
     public ResponseEntity<ApiResponse<?>> getAll(@RequestParam(required = false) String q,
-                                                  @RequestParam(required = false) String categoria) {
+                                                  @RequestParam(required = false) String categoria,
+                                                  @RequestParam(defaultValue = "0") int page,
+                                                  @RequestParam(defaultValue = "99999") int size) {
         if (q != null && !q.isBlank()) {
             return ResponseEntity.ok(ApiResponse.ok(productService.buscar(q, categoria)));
+        }
+        if (page > 0 || size < 99999) {
+            return ResponseEntity.ok(ApiResponse.ok(
+                    productService.findAll(PageRequest.of(page, size, Sort.by("nombre")))));
         }
         return ResponseEntity.ok(ApiResponse.ok(productService.findAll()));
     }

@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.security.SecureRandom;
 import java.time.Instant;
 import java.util.Map;
 import java.util.Optional;
@@ -102,19 +103,34 @@ public class AuthService {
 
         var user = opt.get();
 
+        String newPassword = generarPasswordTemporal();
+        user.setPasswordHash(passwordEncoder.encode(newPassword));
+        userRepository.save(user);
+
         logRepository.save(LogEntry.builder()
                 .nivel("info").modulo("auth")
-                .mensaje("Solicitud recuperación password: " + request.getUsernameOrEmail())
+                .mensaje("Contraseña restablecida para: " + request.getUsernameOrEmail())
                 .usuario(user)
                 .contexto("{\"usernameOrEmail\":\"" + request.getUsernameOrEmail() + "\"}")
                 .build());
 
         return Map.of(
-                "mensaje", "Se ha enviado un enlace de recuperación a " + user.getCorreo(),
+                "mensaje", "Tu contraseña ha sido restablecida",
+                "username", user.getUsername(),
+                "password", newPassword,
                 "nombre", user.getNombre(),
-                "apellidos", user.getApellidos(),
-                "correo", user.getCorreo()
+                "apellidos", user.getApellidos()
         );
+    }
+
+    private String generarPasswordTemporal() {
+        String chars = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789!@#$";
+        SecureRandom random = new SecureRandom();
+        StringBuilder sb = new StringBuilder(10);
+        for (int i = 0; i < 10; i++) {
+            sb.append(chars.charAt(random.nextInt(chars.length())));
+        }
+        return sb.toString();
     }
 
     public void registrarLog(String nivel, String modulo, String mensaje, String usuarioId) {

@@ -4,6 +4,8 @@ import com.machy.dto.request.UserRequest;
 import com.machy.entity.User;
 import com.machy.repository.AttendanceRepository;
 import com.machy.repository.UserRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -26,6 +28,10 @@ public class UserService {
 
     public List<User> findAll() {
         return userRepository.findAllByOrderByNombre();
+    }
+
+    public Page<User> findAll(Pageable pageable) {
+        return userRepository.findAll(pageable);
     }
 
     public User findById(UUID id) {

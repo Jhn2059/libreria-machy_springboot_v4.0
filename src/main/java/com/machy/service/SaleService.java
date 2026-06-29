@@ -3,6 +3,8 @@ package com.machy.service;
 import com.machy.dto.request.SaleRequest;
 import com.machy.entity.*;
 import com.machy.repository.*;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -38,8 +40,16 @@ public class SaleService {
         return saleRepository.findAllByOrderByCreatedAtDesc();
     }
 
+    public Page<Sale> findAll(Pageable pageable) {
+        return saleRepository.findAll(pageable);
+    }
+
     public List<Sale> findByVendedor(UUID vendedorId) {
         return saleRepository.findByVendedorIdOrderByCreatedAtDesc(vendedorId);
+    }
+
+    public Page<Sale> findByVendedor(UUID vendedorId, Pageable pageable) {
+        return saleRepository.findByVendedorIdOrderByCreatedAtDesc(vendedorId, pageable);
     }
 
     public Sale findById(UUID id) {

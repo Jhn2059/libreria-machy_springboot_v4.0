@@ -7,6 +7,8 @@ import com.machy.security.JwtAuthenticationFilter;
 import com.machy.service.AttendanceService;
 import com.machy.service.UserService;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -27,7 +29,12 @@ public class UserController {
     }
 
     @GetMapping
-    public ResponseEntity<ApiResponse<?>> getAll() {
+    public ResponseEntity<ApiResponse<?>> getAll(@RequestParam(defaultValue = "0") int page,
+                                                  @RequestParam(defaultValue = "99999") int size) {
+        if (page > 0 || size < 99999) {
+            return ResponseEntity.ok(ApiResponse.ok(
+                    userService.findAll(PageRequest.of(page, size, Sort.by("nombre")))));
+        }
         return ResponseEntity.ok(ApiResponse.ok(userService.findAll()));
     }
 

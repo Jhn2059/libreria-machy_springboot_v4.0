@@ -158,6 +158,7 @@ function enterApp() {
 }
 
 function logout() {
+  const token = api.getToken();
   api.setToken(null);
   localStorage.removeItem('machy_token');
   CU = null; cart = [];
@@ -166,6 +167,9 @@ function logout() {
   document.getElementById('btn-login').disabled = false;
   document.getElementById('btn-login-txt').textContent = 'Ingresar al sistema';
   hideLoginErr(); showPage('page-login');
+  if (token) {
+    fetch('/api/auth/logout', { method: 'POST', headers: { 'Authorization': 'Bearer ' + token } }).catch(() => {});
+  }
   toast('Sesión cerrada correctamente · RF-03', 'info', '👋');
 }
 
@@ -186,7 +190,7 @@ async function recuperarPassword() {
     const result = await api.recover(usr);
     res.style.display = 'block';
     res.style.background = '#DCFCE7'; res.style.color = '#16A34A';
-    res.innerHTML = `✅ Se ha enviado un enlace de recuperación a <strong>${result.correo}</strong> (${result.nombre} ${result.apellidos}).`;
+    res.innerHTML = `✅ Contraseña restablecida para <strong>${result.nombre} ${result.apellidos}</strong>.<br>Usuario: <strong>${result.username}</strong><br>Nueva contraseña: <strong>${result.password}</strong><br><span style="font-size:.78rem;color:#16A34A">Cambia tu contraseña después de iniciar sesión.</span>`;
   } catch(e) {
     res.style.display = 'block';
     res.style.background = '#FEE2E2'; res.style.color = '#DC2626';
@@ -283,10 +287,14 @@ function goSec(name) {
 // ══════════════════════════════════════════════════════════════════════
 // DATA LOAD (API -> fallback mock)
 // ══════════════════════════════════════════════════════════════════════
+function extractItems(data) {
+  return data && data.content ? data.content : Array.isArray(data) ? data : [];
+}
+
 async function loadAll() {
   if (!USE_DEMO && api.getToken()) {
-    try { const prods = await api.getProducts();
-      if (prods && prods.length) {
+    try { const prods = extractItems(await api.getProducts());
+      if (prods.length) {
         PRODS = prods.map(p => ({
           id: p.id, codigo: p.codigo, nombre: p.nombre, descripcion: p.descripcion||'',
           categoria: p.categoriaNombre||p.categoria||'', unidad: p.unidad||'unidad',
@@ -296,11 +304,11 @@ async function loadAll() {
         }));
       }
     } catch(e) { console.warn('Error cargando productos:', e.message); }
-    try { const sales = await api.getSales();
-      if (sales && sales.length) VENTAS = sales;
+    try { const sales = extractItems(await api.getSales());
+      if (sales.length) VENTAS = sales;
     } catch(e) { console.warn('Error cargando ventas:', e.message); }
-    try { const users = await api.getUsers();
-      if (users && users.length) USERS = users;
+    try { const users = extractItems(await api.getUsers());
+      if (users.length) USERS = users;
     } catch(e) { console.warn('Error cargando usuarios:', e.message); }
   }
   renderDash(); renderInv(PRODS); renderCat(PRODS); renderHistorial(VENTAS);
